@@ -1,0 +1,18 @@
+.footer {
+  border-top: 1px solid var(--color-border);
+  padding: 24px 0;
+  margin-top: 40px;
+}
+
+.footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.footer__muted {
+  color: var(--color-text-muted);
+}
