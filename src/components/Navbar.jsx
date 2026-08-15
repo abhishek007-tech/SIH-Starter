@@ -2,7 +2,9 @@ import { useState } from "react";
 import { NavLink, Link } from "react-router-dom";
 import "./Navbar.css";
 
+
 const links = [
+  { to: "/", label: "Home" },
   { to: "/dashboard", label: "Dashboard" },
   { to: "/analysis", label: "Analysis" },
   { to: "/history", label: "History" },
