@@ -4,9 +4,11 @@ export default function Footer() {
   return (
     <footer className="footer">
       <div className="container footer__inner">
-        <span>© {new Date().getFullYear()} Your Project Name</span>
+        <span className="footer__brand">
+          <span className="footer__mark">V</span> Cadence
+        </span>
         <span className="footer__muted">
-          Built for Smart India Hackathon · Replace this line with your team credit
+          © {new Date().getFullYear()} Cadence · Built for Smart India Hackathon, PS2 — Smart Team Workload Management
         </span>
       </div>
     </footer>

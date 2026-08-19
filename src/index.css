@@ -1,37 +1,62 @@
 /* ==========================================================================
-   Design tokens
-   Swap these values to re-skin the whole app for a new problem statement.
+   Design tokens — Cadence
    ========================================================================== */
 :root {
-  /* Color */
-  --color-bg: #faf9f7;
+  /* Core palette */
+  --color-bg: #f6f6fb;
   --color-surface: #ffffff;
-  --color-text: #15171b;
-  --color-text-muted: #5b6068;
-  --color-border: #e6e4e0;
-  --color-accent: #2f5d50;
-  --color-accent-strong: #1f4038;
-  --color-accent-soft: #e6efec;
-  --color-amber: #c97c3d;
-  --color-amber-soft: #f6e9dd;
-  --color-danger: #c0432f;
-  --color-danger-soft: #f8e6e2;
-  --color-success: #2f7d5c;
-  --color-success-soft: #e3f1ea;
+  --color-surface-alt: #fbfaff;
+  --color-text: #14142b;
+  --color-text-muted: #64637d;
+  --color-text-faint: #9998ab;
+  --color-border: #e9e8f4;
+  --color-border-strong: #d9d7ec;
+
+  /* Brand */
+  --color-accent: #6c5ce7;
+  --color-accent-strong: #5138cf;
+  --color-accent-soft: #efebff;
+  --color-coral: #ff6b6b;
+  --color-coral-soft: #ffe9e9;
+  --color-teal: #00c8a0;
+  --color-teal-soft: #e2fbf5;
+  --color-amber: #ffab2e;
+  --color-amber-soft: #fff3e0;
+
+  /* Status (workload / task health) */
+  --status-green: #00c875;
+  --status-green-soft: #e0f9ee;
+  --status-blue: #579bfc;
+  --status-blue-soft: #e8f1ff;
+  --status-red: #e2445c;
+  --status-red-soft: #fde8ea;
+  --status-black: #454654;
+  --status-black-soft: #ececef;
+
+  /* Back-compat aliases (older page CSS still references these) */
+  --color-success: var(--status-green);
+  --color-success-soft: var(--status-green-soft);
+  --color-danger: var(--status-red);
+  --color-danger-soft: var(--status-red-soft);
+
+  --gradient-brand: linear-gradient(135deg, #7c6cf0 0%, #6c5ce7 42%, #ff6b6b 100%);
+  --gradient-brand-soft: linear-gradient(135deg, #efebff 0%, #ffe9e9 100%);
 
   /* Type */
   --font-display: "Space Grotesk", "Segoe UI", sans-serif;
   --font-body: "Inter", "Segoe UI", sans-serif;
 
   /* Layout */
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
-  --shadow-sm: 0 1px 2px rgba(21, 23, 27, 0.06);
-  --shadow-md: 0 8px 24px rgba(21, 23, 27, 0.08);
-  --shadow-lg: 0 16px 40px rgba(21, 23, 27, 0.12);
-  --max-width: 1160px;
-  --transition: 180ms ease;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+  --shadow-sm: 0 1px 3px rgba(20, 20, 43, 0.06);
+  --shadow-md: 0 10px 30px rgba(20, 20, 43, 0.08);
+  --shadow-lg: 0 24px 60px rgba(20, 20, 43, 0.14);
+  --shadow-glow: 0 12px 40px rgba(108, 92, 231, 0.25);
+  --max-width: 1220px;
+  --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 * {
@@ -50,7 +75,7 @@ body {
   color: var(--color-text);
   font-family: var(--font-body);
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -60,9 +85,9 @@ h3,
 h4 {
   font-family: var(--font-display);
   font-weight: 600;
-  line-height: 1.15;
+  line-height: 1.12;
   margin: 0 0 0.5em;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 p {
@@ -99,6 +124,7 @@ textarea {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 .app-shell main {
@@ -118,14 +144,19 @@ textarea {
 }
 
 .eyebrow {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-family: var(--font-display);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--color-accent);
-  margin-bottom: 12px;
+  color: var(--color-accent-strong);
+  background: var(--color-accent-soft);
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  margin-bottom: 16px;
 }
 
 .card {
@@ -133,7 +164,7 @@ textarea {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
-  transition: box-shadow var(--transition), transform var(--transition);
+  transition: box-shadow var(--transition), transform var(--transition), border-color var(--transition);
 }
 
 .form-field {
@@ -151,9 +182,9 @@ textarea {
 
 .form-field input,
 .form-field select {
-  padding: 11px 14px;
+  padding: 12px 14px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border-strong);
   background: var(--color-surface);
   color: var(--color-text);
   transition: border-color var(--transition), box-shadow var(--transition);
@@ -162,8 +193,13 @@ textarea {
 .form-field input:focus,
 .form-field select:focus {
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px var(--color-accent-soft);
+  box-shadow: 0 0 0 4px var(--color-accent-soft);
   outline: none;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: #fff;
 }
 
 @media (prefers-reduced-motion: reduce) {
