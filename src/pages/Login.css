@@ -1,12 +1,32 @@
+.login-page {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.login-page__blob {
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: var(--gradient-brand-soft);
+  filter: blur(60px);
+  top: -220px;
+  right: -200px;
+  z-index: -1;
+}
+
 .login-page__container {
   display: flex;
   justify-content: center;
+  width: 100%;
 }
 
 .login-card {
   width: 100%;
   max-width: 420px;
-  padding: 36px 32px;
+  padding: 40px 36px;
 }
 
 .login-card__title {
