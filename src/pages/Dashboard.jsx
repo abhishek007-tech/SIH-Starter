@@ -11,6 +11,8 @@ import {
 import "./Dashboard.css";
 
 const TASK_LOAD = 12; // % workload one task represents, for the reassignment simulation
+const PRIO_W = { High: 1.35, Medium: 1, Low: 0.75 }; // deadline-pressure weight per priority (from PulseBoard)
+const TODAY = "2026-08-19";
 
 function statusFor(member, workload) {
   if (member.availability === "Unavailable") return "black";
@@ -20,8 +22,108 @@ function statusFor(member, workload) {
 }
 
 function daysUntil(dateStr) {
-  const diff = new Date(dateStr) - new Date("2026-08-19");
+  const diff = new Date(dateStr) - new Date(TODAY);
   return Math.round(diff / (1000 * 60 * 60 * 24));
+}
+
+/* ---- Team Health Index: a single 0–100 read on how the team is doing ---- */
+function computeHealth(members, tasks) {
+  const overloaded = members.filter((m) => m.workload > 85).length;
+  const overdue = tasks.filter((t) => t.status === "Overdue" || daysUntil(t.deadline) < 0).length;
+  const avg = members.reduce((s, m) => s + m.workload, 0) / (members.length || 1);
+  let h = 100 - overloaded * 12 - overdue * 10 - Math.max(0, avg - 70) * 0.9;
+  return Math.max(0, Math.min(100, Math.round(h)));
+}
+
+function healthTone(h) {
+  return h > 70 ? "#12B76A" : h > 45 ? "#F79009" : "#F04438";
+}
+
+/* Radial gauge — SVG ring, r=42 → circumference ≈ 264 */
+function TeamHealthGauge({ health, overloaded, overdue, unassignedNote, onBalance, canBalance }) {
+  const col = healthTone(health);
+  const label = health > 70 ? "Healthy" : health > 45 ? "Under strain" : "Critical";
+  return (
+    <div className="card insight-card health-card" style={{ "--health-col": col }}>
+      <div className="health-card__ring">
+        <svg viewBox="0 0 100 100" style={{ transform: "rotate(-90deg)" }}>
+          <circle cx="50" cy="50" r="42" fill="none" stroke="var(--border, #E4E7EC)" strokeWidth="9" />
+          <circle
+            cx="50" cy="50" r="42" fill="none" stroke={col} strokeWidth="9" strokeLinecap="round"
+            strokeDasharray={`${(health / 100) * 264} 264`}
+            style={{ transition: "stroke-dasharray .8s cubic-bezier(.22,1,.36,1)" }}
+          />
+        </svg>
+        <div className="health-card__ring-center">
+          <span className="health-card__num" style={{ color: col }}>{health}</span>
+          <span className="health-card__den">/ 100</span>
+        </div>
+      </div>
+      <div className="health-card__body">
+        <span className="eyebrow">Team Health Index</span>
+        <h3 className="health-card__label" style={{ color: col }}>{label}</h3>
+        <p className="health-card__note">
+          {overloaded ? `${overloaded} overloaded · ` : ""}
+          {overdue ? `${overdue} overdue · ` : ""}
+          {unassignedNote || "workload balanced"}
+        </p>
+        {canBalance && (
+          <button className="health-card__balance" onClick={onBalance}>
+            ⚡ Fix it — Auto-Balance
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* 7-day capacity heat: weighted, non-done task pressure due each day */
+function CapacityHeat({ tasks }) {
+  const days = [];
+  for (let i = 0; i < 7; i++) {
+    const day = new Date(TODAY);
+    day.setDate(day.getDate() + i);
+    const key = day.toISOString().slice(0, 10);
+    const load = tasks
+      .filter((t) => t.status !== "Done" && t.deadline === key)
+      .reduce((s, t) => s + (PRIO_W[t.priority] || 1), 0);
+    days.push({
+      day,
+      load,
+      dow: day.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase(),
+      isToday: i === 0,
+    });
+  }
+  const max = Math.max(1, ...days.map((d) => d.load));
+  return (
+    <div className="card insight-card heat-card">
+      <div className="heat-card__head">
+        <span className="eyebrow">Capacity heat · next 7 days</span>
+        <span className="heat-card__legend">
+          <i className="heat-dot heat-dot--low" /> light
+          <i className="heat-dot heat-dot--mid" /> busy
+          <i className="heat-dot heat-dot--high" /> heavy
+        </span>
+      </div>
+      <div className="heat-card__cols">
+        {days.map((d, i) => {
+          const k = d.load / max;
+          const tone = k > 0.66 ? "high" : k > 0.33 ? "mid" : d.load ? "low" : "empty";
+          return (
+            <div
+              key={i}
+              className={`heat-col heat-col--${tone}${d.isToday ? " heat-col--today" : ""}`}
+              title={`${d.load.toFixed(1)} weighted load due ${d.day.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`}
+            >
+              <span className="heat-col__bar" style={{ height: `${Math.max(6, k * 100)}%` }} />
+              <span className="heat-col__val">{d.load ? d.load.toFixed(0) : "·"}</span>
+              <span className="heat-col__dow">{d.dow}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 }
 
 export default function Dashboard() {
@@ -29,6 +131,7 @@ export default function Dashboard() {
   const [tasks, setTasks] = useState(initialTasks);
   const [skillFilter, setSkillFilter] = useState("All");
   const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("workload"); // workload | name | availability
   const [reassignFor, setReassignFor] = useState(null); // member id
   const [newTaskSkill, setNewTaskSkill] = useState(skillsList[0]);
   const [toast, setToast] = useState(null);
@@ -49,12 +152,20 @@ export default function Dashboard() {
   const overdueTasks = tasks.filter((t) => t.status === "Overdue" || daysUntil(t.deadline) < 0);
   const avgWorkload = Math.round(members.reduce((s, m) => s + m.workload, 0) / members.length);
 
-  const filteredMembers = members.filter((m) => {
-    const matchesSkill = skillFilter === "All" || m.skills.includes(skillFilter);
-    const matchesSearch = m.name.toLowerCase().includes(search.toLowerCase()) ||
-      m.role.toLowerCase().includes(search.toLowerCase());
-    return matchesSkill && matchesSearch;
-  });
+  const AVAIL_ORDER = { Available: 0, Unavailable: 1 };
+  const filteredMembers = members
+    .filter((m) => {
+      const matchesSkill = skillFilter === "All" || m.skills.includes(skillFilter);
+      const matchesSearch = m.name.toLowerCase().includes(search.toLowerCase()) ||
+        m.role.toLowerCase().includes(search.toLowerCase());
+      return matchesSkill && matchesSearch;
+    })
+    .sort((a, b) => {
+      if (sortBy === "name") return a.name.localeCompare(b.name);
+      if (sortBy === "availability")
+        return (AVAIL_ORDER[a.availability] - AVAIL_ORDER[b.availability]) || b.workload - a.workload;
+      return b.workload - a.workload; // workload: most loaded first
+    });
 
   const suggestions = useMemo(() => {
     return members
@@ -115,6 +226,45 @@ export default function Dashboard() {
     showToast(`New task assigned to ${member?.name}.`);
   }
 
+  const health = computeHealth(members, tasks);
+  const unassignedCount = tasks.filter((t) => !t.assignee && t.status !== "Done").length;
+  const unassignedNote = unassignedCount ? `${unassignedCount} unassigned` : "";
+
+  // Auto-Balance: move one task off each overloaded member to the least-loaded available teammate.
+  function autoBalance() {
+    let nextMembers = members.map((m) => ({ ...m }));
+    let nextTasks = tasks.map((t) => ({ ...t }));
+    let moves = 0;
+
+    nextMembers
+      .filter((m) => m.workload > 85)
+      .forEach((over) => {
+        const movable = nextTasks.find((t) => t.assignee === over.id && t.status !== "Done");
+        if (!movable) return;
+        const target = nextMembers
+          .filter((m) => m.id !== over.id && m.availability === "Available" && m.workload < 70)
+          .sort((a, b) => a.workload - b.workload)[0];
+        if (!target) return;
+
+        movable.assignee = target.id;
+        const o = nextMembers.find((m) => m.id === over.id);
+        const t = nextMembers.find((m) => m.id === target.id);
+        o.workload = Math.max(0, o.workload - TASK_LOAD);
+        o.status = statusFor(o, o.workload);
+        t.workload = Math.min(100, t.workload + TASK_LOAD);
+        t.status = statusFor(t, t.workload);
+        moves += 1;
+      });
+
+    if (moves === 0) {
+      showToast("Team is already balanced — no moves needed.");
+      return;
+    }
+    setMembers(nextMembers);
+    setTasks(nextTasks);
+    showToast(`Auto-balanced ${moves} task${moves > 1 ? "s" : ""} across the team.`);
+  }
+
   const reassignMember = members.find((m) => m.id === reassignFor);
   const reassignTasks = reassignFor ? tasksByMember[reassignFor] || [] : [];
 
@@ -127,6 +277,9 @@ export default function Dashboard() {
             <h1>Good to see you, Manager</h1>
             <p>Here&apos;s how your team is doing right now.</p>
           </div>
+          <a className="dashboard__member-link" href="/dashboard.html">
+            Open member workspace →
+          </a>
         </div>
 
         <div className="dashboard__stats">
@@ -144,6 +297,18 @@ export default function Dashboard() {
             tone="amber"
           />
           <StatCard label="Avg. workload" value={`${avgWorkload}%`} tone="teal" />
+        </div>
+
+        <div className="dashboard__insights">
+          <TeamHealthGauge
+            health={health}
+            overloaded={overloaded.length}
+            overdue={overdueTasks.length}
+            unassignedNote={unassignedNote}
+            onBalance={autoBalance}
+            canBalance={health < 75}
+          />
+          <CapacityHeat tasks={tasks} />
         </div>
 
         <AnimatePresence>
@@ -174,6 +339,20 @@ export default function Dashboard() {
 
         <div className="dashboard__layout">
           <div className="dashboard__main">
+            <div className="dashboard__board-head">
+              <h2 className="dashboard__board-title">
+                Team board <span>{filteredMembers.length} of {members.length}</span>
+              </h2>
+              <label className="dashboard__sort">
+                Sort by
+                <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+                  <option value="workload">Workload (high → low)</option>
+                  <option value="name">Name (A → Z)</option>
+                  <option value="availability">Availability</option>
+                </select>
+              </label>
+            </div>
+
             <div className="dashboard__toolbar">
               <input
                 type="text"

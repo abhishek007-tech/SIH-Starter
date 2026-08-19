@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import "./TeamMemberCard.css";
 
 const STATUS_LABEL = {
@@ -12,6 +12,22 @@ const STATUS_LABEL = {
  * <TeamMemberCard member={...} tasks={[...]} onReassign={(memberId) => void} />
  */
 export default function TeamMemberCard({ member, tasks = [], onReassign }) {
+  // pointer-following 3D tilt (spring-smoothed so it feels physical)
+  const px = useMotionValue(0);
+  const py = useMotionValue(0);
+  const rotateX = useSpring(useTransform(py, [-0.5, 0.5], [7, -7]), { stiffness: 180, damping: 14 });
+  const rotateY = useSpring(useTransform(px, [-0.5, 0.5], [-9, 9]), { stiffness: 180, damping: 14 });
+
+  const handleMove = (e) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    px.set((e.clientX - r.left) / r.width - 0.5);
+    py.set((e.clientY - r.top) / r.height - 0.5);
+  };
+  const reset = () => {
+    px.set(0);
+    py.set(0);
+  };
+
   return (
     <motion.div
       className="card member-card"
@@ -19,7 +35,9 @@ export default function TeamMemberCard({ member, tasks = [], onReassign }) {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
-      whileHover={{ y: -3 }}
+      onMouseMove={handleMove}
+      onMouseLeave={reset}
+      style={{ rotateX, rotateY, transformPerspective: 900 }}
     >
       <div className="member-card__head">
         <div className="member-card__avatar-wrap">
