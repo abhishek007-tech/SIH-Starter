@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Design tokens — Cadence
+   Design tokens — Veyora
    ========================================================================== */
 :root {
   /* Core palette */
@@ -12,10 +12,10 @@
   --color-border: #e9e8f4;
   --color-border-strong: #d9d7ec;
 
-  /* Brand */
-  --color-accent: #6c5ce7;
-  --color-accent-strong: #5138cf;
-  --color-accent-soft: #efebff;
+  /* Brand — Veyora blue */
+  --color-accent: #2563eb;
+  --color-accent-strong: #1d4ed8;
+  --color-accent-soft: #e7efff;
   --color-coral: #ff6b6b;
   --color-coral-soft: #ffe9e9;
   --color-teal: #00c8a0;
@@ -39,12 +39,12 @@
   --color-danger: var(--status-red);
   --color-danger-soft: var(--status-red-soft);
 
-  --gradient-brand: linear-gradient(135deg, #7c6cf0 0%, #6c5ce7 42%, #ff6b6b 100%);
-  --gradient-brand-soft: linear-gradient(135deg, #efebff 0%, #ffe9e9 100%);
+  --gradient-brand: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1e3a8a 100%);
+  --gradient-brand-soft: linear-gradient(135deg, #e7efff 0%, #eef4ff 100%);
 
   /* Type */
-  --font-display: "Space Grotesk", "Segoe UI", sans-serif;
-  --font-body: "Inter", "Segoe UI", sans-serif;
+  --font-display: "Poppins", "Segoe UI", sans-serif;
+  --font-body: "Figtree", "Inter", "Segoe UI", sans-serif;
 
   /* Layout */
   --radius-sm: 10px;
@@ -139,8 +139,13 @@ textarea {
 }
 
 .page {
-  min-height: calc(100vh - 64px);
   padding: 48px 0 80px;
+}
+
+/* Only full route pages (login/dashboard) fill the viewport, not inner sections */
+.login-page,
+.dashboard-page {
+  min-height: calc(100vh - 68px);
 }
 
 .eyebrow {

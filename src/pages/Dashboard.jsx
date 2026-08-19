@@ -229,7 +229,7 @@ export default function Dashboard() {
             <div className="card assign-panel">
               <h3>Assign a new task</h3>
               <p className="assign-panel__hint">
-                Pick a required skill — Cadence ranks the best-fit, least-loaded teammate.
+                Pick a required skill — Veyora ranks the best-fit, least-loaded teammate.
               </p>
               <div className="form-field">
                 <label htmlFor="skill">Required skill</label>

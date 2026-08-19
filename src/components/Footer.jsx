@@ -1,3 +1,4 @@
+import Logo from "./Logo.jsx";
 import "./Footer.css";
 
 export default function Footer() {
@@ -5,10 +6,10 @@ export default function Footer() {
     <footer className="footer">
       <div className="container footer__inner">
         <span className="footer__brand">
-          <span className="footer__mark">V</span> Cadence
+          <Logo size={24} />
         </span>
         <span className="footer__muted">
-          © {new Date().getFullYear()} Cadence · Built for Smart India Hackathon, PS2 — Smart Team Workload Management
+          © {new Date().getFullYear()} Veyora · Smart team workload management for modern teams
         </span>
       </div>
     </footer>

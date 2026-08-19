@@ -1,4 +1,4 @@
-// Demo data for Cadence — Smart Team Workload Management (SIH · PS2).
+// Demo data for Veyora — Smart Team Workload Management.
 // Replace with real API responses once the backend is live; keep shapes the same.
 
 export const skillsList = [
@@ -24,7 +24,7 @@ export const teamMembers = [
     availability: "Available",
     workload: 92,
     status: "red",
-    email: "ananya@cadence.dev",
+    email: "ananya@veyora.dev",
   },
   {
     id: "m2",
@@ -35,7 +35,7 @@ export const teamMembers = [
     availability: "Available",
     workload: 68,
     status: "blue",
-    email: "kabir@cadence.dev",
+    email: "kabir@veyora.dev",
   },
   {
     id: "m3",
@@ -46,7 +46,7 @@ export const teamMembers = [
     availability: "Available",
     workload: 41,
     status: "green",
-    email: "meera@cadence.dev",
+    email: "meera@veyora.dev",
   },
   {
     id: "m4",
@@ -57,7 +57,7 @@ export const teamMembers = [
     availability: "Unavailable",
     workload: 55,
     status: "black",
-    email: "rohan@cadence.dev",
+    email: "rohan@veyora.dev",
   },
   {
     id: "m5",
@@ -68,7 +68,7 @@ export const teamMembers = [
     availability: "Available",
     workload: 88,
     status: "red",
-    email: "sana@cadence.dev",
+    email: "sana@veyora.dev",
   },
   {
     id: "m6",
@@ -79,7 +79,7 @@ export const teamMembers = [
     availability: "Available",
     workload: 33,
     status: "green",
-    email: "vivaan@cadence.dev",
+    email: "vivaan@veyora.dev",
   },
 ];
 
@@ -211,7 +211,7 @@ export const featureCards = [
     id: "feat-3",
     title: "Assign to the right person",
     description:
-      "When a task lands, Cadence ranks the best-fit teammate by skill match and free capacity.",
+      "When a task lands, Veyora ranks the best-fit teammate by skill match and free capacity.",
   },
   {
     id: "feat-4",
@@ -230,7 +230,7 @@ export const workflowSteps = [
   {
     id: "step-2",
     title: "Drop in tasks & deadlines",
-    description: "Cadence maps every task to workload and due dates automatically.",
+    description: "Veyora maps every task to workload and due dates automatically.",
   },
   {
     id: "step-3",
@@ -241,5 +241,82 @@ export const workflowSteps = [
     id: "step-4",
     title: "Rebalance instantly",
     description: "Accept a smart suggestion or manually reassign — the board updates live.",
+  },
+];
+
+export const solutions = [
+  {
+    id: "sol-1",
+    tag: "For managers",
+    title: "Stop making assignment decisions blind",
+    description:
+      "Most managers assign work from memory — who seems free, who did the last one. Veyora replaces the guesswork with real numbers: current load, matching skills, and open deadlines, all in one glance.",
+    points: ["Live workload %, not stale spreadsheets", "Skill tags so the right person gets the right task", "Availability status before you ever ask"],
+  },
+  {
+    id: "sol-2",
+    tag: "For the whole team",
+    title: "Nobody quietly burns out",
+    description:
+      "Overload creeps in one 'just one more task' at a time. Veyora flags anyone crossing 85% capacity the moment it happens — so it gets caught in a stand-up, not in a resignation.",
+    points: ["Automatic red-flag alerts on overload", "Deadline-risk radar for what's about to slip", "One click to move work off an overloaded plate"],
+  },
+  {
+    id: "sol-3",
+    tag: "For the project",
+    title: "Deadlines stop depending on luck",
+    description:
+      "When priorities shift or someone goes on leave, reassignment used to mean a scramble in the group chat. Veyora ranks the best-fit replacement instantly, by skill and by who actually has room.",
+    points: ["Ranked suggestions, not a guessing game", "Reassign in one click, workload updates live", "A single source of truth for the whole team"],
+  },
+];
+
+export const aboutStats = [
+  { id: "a1", value: "85%", label: "Overload caught before deadlines slip" },
+  { id: "a2", value: "1-click", label: "Reassignment when plans change" },
+  { id: "a3", value: "Live", label: "Workload updates in real time" },
+  { id: "a4", value: "0", label: "Spreadsheets to keep in sync" },
+];
+
+export const faqs = [
+  {
+    id: "faq-1",
+    q: "What problem does Veyora actually solve?",
+    a: "Managers often can't see, at a glance, who on their team is overloaded, who's free, and whose skills fit an incoming task. Veyora turns that into one live board — workload, skills, availability and deadlines together — so assignment decisions take seconds instead of guesswork.",
+  },
+  {
+    id: "faq-2",
+    q: "How does the 'suggest suitable member' logic work?",
+    a: "When you pick a required skill for a new task, Veyora filters to available members who have that skill, then ranks them by current workload — lowest first. The top match is starred so you can assign in one click.",
+  },
+  {
+    id: "faq-3",
+    q: "What happens when I reassign a task?",
+    a: "Picking a new owner for a task instantly recalculates both members' workload bars and status colors — the old owner's load drops, the new owner's rises — so the board always reflects reality, not the last time someone updated a spreadsheet.",
+  },
+  {
+    id: "faq-4",
+    q: "How does Veyora decide someone is 'overloaded'?",
+    a: "Every task carries an effort weight that adds to a member's workload percentage. Once someone crosses 85% they're flagged red and surfaced in the alerts band — early enough to rebalance before a deadline is actually at risk.",
+  },
+  {
+    id: "faq-5",
+    q: "What do the colored dots mean?",
+    a: "Green means on track, blue means busy but healthy, red means overloaded (above 85% capacity), and black/grey means unavailable — on leave or offline. The same colors are used on workload bars and status pills throughout the app.",
+  },
+  {
+    id: "faq-6",
+    q: "Can I filter the team by skill?",
+    a: "Yes — the dashboard has skill filter chips plus a live search, so you can instantly narrow to, say, every available Frontend engineer under 60% load when a new task comes in.",
+  },
+  {
+    id: "faq-7",
+    q: "Does it work on mobile?",
+    a: "The whole experience is responsive — the board, cards and panels reflow into a single column on tablet and mobile, so a manager can rebalance work from their phone.",
+  },
+  {
+    id: "faq-8",
+    q: "How fast can my team start using it?",
+    a: "There's nothing to configure to explore it — the app ships with a realistic sample team so you can see alerts, suggestions and live reassignment working the moment you open the dashboard.",
   },
 ];

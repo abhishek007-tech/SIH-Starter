@@ -38,7 +38,7 @@ export default function Login() {
           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         >
           <span className="eyebrow">Welcome back</span>
-          <h1 className="login-card__title">Log in to Cadence</h1>
+          <h1 className="login-card__title">Log in to Veyora</h1>
           <p className="login-card__subtitle">
             This is a frontend prototype — no real authentication is connected yet.
           </p>
